@@ -17,7 +17,6 @@ function App() {
       // User is signed in
       const uid = user.uid;
       setIsLogin(true);
-      console.log(user);
     } else {
       // User is signed out
       setIsLogin(false);
