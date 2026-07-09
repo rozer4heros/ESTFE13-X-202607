@@ -121,9 +121,9 @@ function Auth({}) {
       <Divider sx={{ my: 3 }} />
       <Button
         sx={{ my: 2 }}
-        color="secondary"
         type="button"
         variant="contained"
+        color="secondary"
         onClick={() => setNewAccount((p) => !p)}
       >
         {newAccount ? "로그인으로 전환" : "회원가입으로 전환"}
