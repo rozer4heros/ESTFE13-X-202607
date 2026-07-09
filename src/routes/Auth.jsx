@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { authService } from "../firebase.js";
 import {
@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
+import Snackbar from "@mui/material/Snackbar";
 
 function Auth({}) {
   const [newAccount, setNewAccount] = useState(true);
@@ -20,6 +21,11 @@ function Auth({}) {
     email: "",
     password: "",
   });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [errorOpen, setErrorOpen] = useState(false);
+
+  const emailInputRef = useRef(null);
+
   const auth = authService;
   const googleProvider = new GoogleAuthProvider();
 
@@ -43,6 +49,10 @@ function Auth({}) {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.warn(errorCode, errorMessage);
+          setErrorMsg(errorMessage.includes("email-already-in-use") ? "이메일이 이미 사용중입니다." : errorMessage);
+          setErrorOpen(true);
+          setForm({ email: "", password: "" });
+          emailInputRef.current.focus();
         });
     } else {
       // 로그인
@@ -56,6 +66,8 @@ function Auth({}) {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.warn(errorCode, errorMessage);
+          setErrorMsg(errorMessage);
+          setErrorOpen(true);
         });
     }
   };
@@ -99,7 +111,9 @@ function Auth({}) {
           type="email"
           name="email"
           variant="outlined"
+          value={form.email}
           onChange={handleChange}
+          inputRef={emailInputRef}
         />
         <TextField
           sx={{ my: 1 }}
@@ -108,17 +122,30 @@ function Auth({}) {
           type="password"
           name="password"
           variant="outlined"
+          value={form.password}
           onChange={handleChange}
         />
         <Button sx={{ m: 1 }} type="submit" variant="contained">
           {newAccount ? "회원가입" : "로그인"}
         </Button>
+        <Snackbar
+          open={errorOpen}
+          autoHideDuration={3000}
+          message={errorMsg}
+          onClose={() => {
+            setErrorOpen(false);
+          }}
+        />
+
         <Divider sx={{ my: 1 }} />
+
         <Button sx={{ m: 1 }} type="button" variant="contained" onClick={onGoogleSignIn}>
           {newAccount ? "구글로 회원가입" : "구글로 로그인"}
         </Button>
       </Box>
+
       <Divider sx={{ my: 3 }} />
+
       <Button
         sx={{ my: 2 }}
         type="button"
