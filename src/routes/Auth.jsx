@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { authService } from "../firebase.js";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -40,6 +40,17 @@ function Auth({}) {
         });
     } else {
       // 로그인
+      signInWithEmailAndPassword(auth, form.email, form.password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(userCredential);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.warn(errorCode, errorMessage);
+        });
     }
   };
 
