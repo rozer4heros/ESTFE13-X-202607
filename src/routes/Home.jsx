@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { db } from "../firebase";
 import {
@@ -19,21 +19,25 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 import Comment from "../components/Comment";
 
 function Home({ userId }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [attachment, setAttachment] = useState(null);
 
-  async function getComments() {
+  const fileInputRef = useRef(null);
+
+  const getComments = async () => {
     const q = query(collection(db, "comments"), orderBy("date", "desc"), limit(5));
 
     onSnapshot(q, (querySnapShot) => {
       const commentsArray = querySnapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setComments(commentsArray);
     });
-  }
+  };
   useEffect(() => {
     getComments();
   }, []);
@@ -52,6 +56,19 @@ function Home({ userId }) {
     } catch (e) {
       console.error("글 등록 중 오류 발생:", e);
     }
+  };
+  const onFileChange = (e) => {
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAttachment(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+  const onClearFile = () => {
+    setAttachment(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
@@ -73,6 +90,25 @@ function Home({ userId }) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
+        <Box sx={{ my: 1, display: "flex", alignItems: "center", gap: 1 }}>
+          <Button component="label" type="button" variant="outlined" startIcon={<UploadFileIcon />}>
+            이미지 선택
+            <input type="file" hidden accept="image/*" onChange={onFileChange} ref={fileInputRef} />
+          </Button>
+          {attachment && (
+            <>
+              <Box
+                component="img"
+                src={attachment}
+                alt="미리보기"
+                sx={{ width: 50, height: 50, objectFit: "cover", border: "1px solid #ddd", borderRadius: 3 }}
+              ></Box>
+              <Button type="button" color="error" variant="outlined" size="small" onClick={onClearFile}>
+                취소
+              </Button>
+            </>
+          )}
+        </Box>
         <Button sx={{ m: 1 }} type="submit" variant="contained">
           등록
         </Button>
