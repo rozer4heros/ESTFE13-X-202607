@@ -19,8 +19,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+
+import Comment from "../components/Comment";
 
 function Home({}) {
   const [comment, setComment] = useState("");
@@ -77,17 +77,10 @@ function Home({}) {
         </Button>
       </Box>
       <Divider sx={{ my: 3 }} />
-      <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {/* comments배열의 값을 ListItem으로 출력 */}
-        {comments.length > 0 &&
-          comments.map((c, i) => (
-            <ListItem key={c.id} alignItems="flex-start" divider>
-              <ListItemText
-                primary={c.comment}
-                secondary={c.date ? c.date.toDate().toLocaleString() : "Datetime Unknown"}
-              ></ListItemText>
-            </ListItem>
-          ))}
+      <List sx={{ width: "100%" }}>
+        {comments.map((c) => (
+          <Comment key={c.id} item={c} />
+        ))}
       </List>
     </>
   );
