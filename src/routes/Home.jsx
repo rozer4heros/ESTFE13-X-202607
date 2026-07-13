@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 
 import { db } from "../firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+  onSnapshot,
+} from "firebase/firestore";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -17,16 +27,16 @@ function Home({}) {
   const [comments, setComments] = useState([]);
 
   async function getComments() {
-    const q = query(collection(db, "comments"));
-    const querySnapshot = await getDocs(q);
-    const commentArray = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setComments(commentArray);
+    const q = query(collection(db, "comments"), orderBy("date", "desc"), limit(5));
+
+    onSnapshot(q, (querySnapShot) => {
+      const commentsArray = querySnapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setComments(commentsArray);
+    });
   }
   useEffect(() => {
     getComments();
   }, []);
-
-  if (comments.length > 0) console.log(comments);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +47,7 @@ function Home({}) {
         date: serverTimestamp(),
       });
       setComment("");
+      // getComments();
     } catch (e) {
       console.error("글 등록 중 오류 발생:", e);
     }
@@ -71,7 +82,10 @@ function Home({}) {
         {comments.length > 0 &&
           comments.map((c, i) => (
             <ListItem key={c.id} alignItems="flex-start" divider>
-              <ListItemText primary={c.comment} secondary={c.date.toDate().toLocaleString()}></ListItemText>
+              <ListItemText
+                primary={c.comment}
+                secondary={c.date ? c.date.toDate().toLocaleString() : "Datetime Unknown"}
+              ></ListItemText>
             </ListItem>
           ))}
       </List>
