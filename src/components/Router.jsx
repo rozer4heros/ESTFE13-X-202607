@@ -6,14 +6,14 @@ import Auth from "../routes/Auth";
 import Profile from "../routes/Profile";
 import EditProfile from "../routes/EditProfile";
 
-function Router({ isLogin }) {
+function Router({ isLogin, userId }) {
   return (
     <>
       {isLogin && <Nav />}
       <Routes>
         {isLogin ? (
           <>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home userId={userId} />} />
             <Route path="/profile" element={<Profile />} />
           </>
         ) : (

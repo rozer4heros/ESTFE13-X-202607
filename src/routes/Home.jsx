@@ -22,7 +22,7 @@ import List from "@mui/material/List";
 
 import Comment from "../components/Comment";
 
-function Home({}) {
+function Home({ userId }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
@@ -45,6 +45,7 @@ function Home({}) {
         // comment: comment,
         comment,
         date: serverTimestamp(),
+        uid: userId,
       });
       setComment("");
       // getComments();
@@ -79,7 +80,7 @@ function Home({}) {
       <Divider sx={{ my: 3 }} />
       <List sx={{ width: "100%" }}>
         {comments.map((c) => (
-          <Comment key={c.id} item={c} />
+          <Comment key={c.id} item={c} isShown={userId === c.uid} />
         ))}
       </List>
     </>
