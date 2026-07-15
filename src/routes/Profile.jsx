@@ -50,7 +50,7 @@ function Profile({}) {
       <Divider sx={{ my: 3 }} />
       <List sx={{ width: "100%" }}>
         {comments.map((c) => (
-          <Comment key={c.id} item={c} isShown={userId === c.uid} />
+          <Comment key={c.id} item={c} isShown={true} />
         ))}
       </List>
     </>
