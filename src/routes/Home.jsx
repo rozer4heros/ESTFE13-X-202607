@@ -13,7 +13,7 @@ import {
   limit,
   onSnapshot,
 } from "firebase/firestore";
-import { ref, uploadString } from "firebase/storage";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -48,24 +48,21 @@ function Home({ userId }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const storageRef = ref(storage, `${userId}/${uuidv4()}`);
 
-    uploadString(storageRef, attachment, "data_url").then((snapshot) => {
-      console.log("File Uploaded");
-    });
-
-    /*
     try {
-      const docRef = await addDoc(collection(db, "comments"), {
-        comment, // comment: comment,
-        date: serverTimestamp(),
-        uid: userId,
-      });
+      let imageURL = null;
+      if (attachment) {
+        const storageRef = ref(storage, `${userId}/${uuidv4()}`);
+        const snapshot = await uploadString(storageRef, attachment, "data_url");
+        imageURL = await getDownloadURL(storageRef);
+      }
+      const data = { comment, date: serverTimestamp(), uid: userId, image: imageURL };
+      const docRef = await addDoc(collection(db, "comments"), data);
       setComment("");
+      onClearFile();
     } catch (e) {
-      console.error("글 등록 중 오류 발생:", e);
+      console.error("게시물 업로드 중 오류 발생:", e);
     }
-    */
   };
   const onFileChange = (e) => {
     const file = e.target.files[0];
