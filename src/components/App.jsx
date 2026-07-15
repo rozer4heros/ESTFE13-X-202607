@@ -31,7 +31,7 @@ function App() {
   return (
     <Container>
       <h1>ESTFE-X</h1>
-      {init ? <Router isLogin={isLogin} userId={userId} /> : <h2>사용자 정보를 불러오고 있습니다...</h2>}
+      {init ? <Router isLogin={isLogin} /> : <h2>사용자 정보를 불러오고 있습니다...</h2>}
     </Container>
   );
 }

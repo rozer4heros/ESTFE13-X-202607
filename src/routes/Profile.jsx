@@ -11,7 +11,7 @@ import List from "@mui/material/List";
 
 import Comment from "../components/Comment";
 
-function Profile() {
+function Profile({}) {
   const [comments, setComments] = useState([]);
   const auth = authService;
   const userId = auth.currentUser.uid;

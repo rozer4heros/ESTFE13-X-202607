@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { db, storageService } from "../firebase";
+import { authService, db, storageService } from "../firebase";
 import {
   collection,
   addDoc,
@@ -25,12 +25,14 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 import Comment from "../components/Comment";
 
-function Home({ userId }) {
+function Home({}) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [attachment, setAttachment] = useState(null);
   const fileInputRef = useRef(null);
 
+  const auth = authService;
+  const userId = auth.currentUser.uid;
   const storage = storageService;
   const storageRef = ref(storage);
 
