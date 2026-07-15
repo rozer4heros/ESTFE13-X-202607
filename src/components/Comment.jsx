@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { db } from "../firebase";
+import { db, storageService } from "../firebase";
 import { doc, deleteDoc, setDoc, updateDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
 
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -18,8 +19,19 @@ function Comment({ item, isShown }) {
     setEdit((prev) => !prev);
   };
   const handleDelete = async () => {
-    if (window.confirm("정말로 삭제할까요?")) {
+    if (!window.confirm("정말로 삭제할까요?")) return;
+
+    try {
       await deleteDoc(doc(db, "comments", item.id));
+
+      if (item.image) {
+        const storage = storageService;
+        const storageRef = ref(storage, item.image);
+        await deleteObject(storageRef);
+      }
+    } catch (err) {
+      console.error("게시물 삭제 중 오류 발생:", err);
+      alert("게시물 삭제 중 오류 발생");
     }
   };
   const onSubmit = async (e) => {
@@ -62,6 +74,17 @@ function Comment({ item, isShown }) {
             primary={item.comment}
             secondary={item.date ? item.date.toDate().toLocaleString() : "Datetime Unknown"}
           />
+          {
+            // 이미지가 있으면 이미지 출력
+            item.image && (
+              <Box
+                component="img"
+                src={item.image}
+                alt=""
+                sx={{ mx: 3, width: 50, height: 50, objectFit: "cover", border: "1px solid #ddd", borderRadius: 3 }}
+              ></Box>
+            )
+          }
           {isShown && (
             <Stack direction="row" spacing={1}>
               <Button variant="outlined" color="primary" size="small" onClick={toggleEditMode}>

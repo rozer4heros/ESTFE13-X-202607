@@ -35,7 +35,7 @@ function Home({ userId }) {
   const storageRef = ref(storage);
 
   const getComments = async () => {
-    const q = query(collection(db, "comments"), orderBy("date", "desc"), limit(5));
+    const q = query(collection(db, "comments"), orderBy("date", "desc"), limit(12));
 
     onSnapshot(q, (querySnapShot) => {
       const commentsArray = querySnapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -60,8 +60,8 @@ function Home({ userId }) {
       const docRef = await addDoc(collection(db, "comments"), data);
       setComment("");
       onClearFile();
-    } catch (e) {
-      console.error("게시물 업로드 중 오류 발생:", e);
+    } catch (err) {
+      console.error("게시물 업로드 중 오류 발생:", err);
     }
   };
   const onFileChange = (e) => {
