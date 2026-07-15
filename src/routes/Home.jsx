@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-import { db } from "../firebase";
+import { db, storageService } from "../firebase";
 import {
   collection,
   addDoc,
@@ -12,6 +13,7 @@ import {
   limit,
   onSnapshot,
 } from "firebase/firestore";
+import { ref, uploadString } from "firebase/storage";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -27,8 +29,10 @@ function Home({ userId }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [attachment, setAttachment] = useState(null);
-
   const fileInputRef = useRef(null);
+
+  const storage = storageService;
+  const storageRef = ref(storage);
 
   const getComments = async () => {
     const q = query(collection(db, "comments"), orderBy("date", "desc"), limit(5));
@@ -44,18 +48,24 @@ function Home({ userId }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    const storageRef = ref(storage, `${userId}/${uuidv4()}`);
+
+    uploadString(storageRef, attachment, "data_url").then((snapshot) => {
+      console.log("File Uploaded");
+    });
+
+    /*
     try {
       const docRef = await addDoc(collection(db, "comments"), {
-        // comment: comment,
-        comment,
+        comment, // comment: comment,
         date: serverTimestamp(),
         uid: userId,
       });
       setComment("");
-      // getComments();
     } catch (e) {
       console.error("글 등록 중 오류 발생:", e);
     }
+    */
   };
   const onFileChange = (e) => {
     const file = e.target.files[0];
